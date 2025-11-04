@@ -48,7 +48,7 @@ Complete deployment guide for **MinIO** object storage with Docker Compose, buck
 - Root or sudo access
 
 **Network:**
-- IP: `192.168.77.71` (adjustable)
+- IP: `192.168.11.12` (adjustable)
 - Ports: `9000` (API), `9001` (Console)
 
 **Installation Check:**
@@ -106,7 +106,7 @@ services:
       - 9001:9001
     environment:
       MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: hellodhaka
+      MINIO_ROOT_PASSWORD: stongPassword
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
@@ -137,7 +137,7 @@ abc123def456   quay.io/minio/minio:latest          "minio server..."   0.0.0.0:9
 #### Verify Deployment Health
 
 ```bash
-curl http://192.168.77.71:9000/minio/health/live
+curl http://192.168.11.12:9000/minio/health/live
 ```
 
 **Expected Output:**
@@ -152,7 +152,7 @@ curl http://192.168.77.71:9000/minio/health/live
 Establish connection to MinIO server with CLI.
 
 ```bash
-mc alias set myminio http://192.168.77.71:9000 admin hellodhaka --insecure
+mc alias set myminio http://192.168.11.12:9000 admin stongPassword --insecure
 ```
 
 **Verify Connection:**
@@ -163,7 +163,7 @@ mc admin info myminio
 
 **Expected Output (sample):**
 ```
-●  192.168.77.71:9000
+●  192.168.11.12:9000
    Uptime: 2 minutes
    Version: 2025-11-04T...
    Network In/Out: 0B / 0B
@@ -263,7 +263,7 @@ mc admin policy info myminio build-artifacts-rw
 Create application user for service account.
 
 ```bash
-mc admin user add myminio sctdev hellodhaka
+mc admin user add myminio sctdev stongPassword
 ```
 
 **Verify User Creation:**
@@ -363,7 +363,7 @@ Validate that service account has correct bucket permissions.
 #### Configure Test Alias
 
 ```bash
-mc alias set cicd http://192.168.77.71:9000 <ACCESS_KEY> <SECRET_KEY> --insecure
+mc alias set cicd http://192.168.11.12:9000 <ACCESS_KEY> <SECRET_KEY> --insecure
 ```
 
 Replace:
@@ -406,11 +406,11 @@ mc mb cicd/unauthorized-bucket
 
 MinIO web UI for bucket management and monitoring.
 
-**URL:** `http://192.168.77.71:9001`
+**URL:** `http://192.168.11.12:9001`
 
 **Login Credentials:**
 - Username: `admin`
-- Password: `hellodhaka`
+- Password: `stongPassword`
 
 ⚠️ **Note:** Service accounts cannot login to the web console — they are API-only credentials.
 
@@ -433,7 +433,7 @@ cd /opt/minio
 sudo docker compose up -d
 
 # 3️⃣ Configure alias
-mc alias set myminio http://192.168.77.71:9000 admin hellodhaka --insecure
+mc alias set myminio http://192.168.11.12:9000 admin stongPassword --insecure
 
 # 4️⃣ Create bucket
 mc mb myminio/build-artifacts
@@ -442,7 +442,7 @@ mc mb myminio/build-artifacts
 mc admin policy create myminio build-artifacts-rw build-artifacts-rw-policy.json
 
 # 6️⃣ Create user
-mc admin user add myminio sctdev hellodhaka
+mc admin user add myminio sctdev stongPassword
 
 # 7️⃣ Attach policy
 mc admin policy attach myminio build-artifacts-rw --user sctdev
@@ -454,7 +454,7 @@ mc admin user svcacct add myminio sctdev \
   --description "Access to build-artifact bucket only"
 
 # 9️⃣ Test access
-mc alias set cicd http://192.168.77.71:9000 <ACCESS_KEY> <SECRET_KEY> --insecure
+mc alias set cicd http://192.168.11.12:9000 <ACCESS_KEY> <SECRET_KEY> --insecure
 mc ls cicd/build-artifacts
 ```
 
@@ -473,7 +473,7 @@ pipelines:
           - apt-get update && apt-get install -y wget
           - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
           - chmod +x mc
-          - ./mc alias set storage http://192.168.77.71:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
+          - ./mc alias set storage http://192.168.11.12:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
           - ./mc cp build-output.tar.gz storage/build-artifacts/${BITBUCKET_BUILD_NUMBER}/
           - echo "Artifact uploaded successfully"
 ```
@@ -493,7 +493,7 @@ upload_artifacts:
   script:
     - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
     - chmod +x mc
-    - ./mc alias set storage http://192.168.77.71:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
+    - ./mc alias set storage http://192.168.11.12:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
     - ./mc cp build-output.tar.gz storage/build-artifacts/${CI_PIPELINE_ID}/
   only:
     - main
@@ -528,7 +528,7 @@ jobs:
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
         run: |
-          mc alias set storage http://192.168.77.71:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
+          mc alias set storage http://192.168.11.12:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure
           mc cp build-output.tar.gz storage/build-artifacts/${{ github.run_id }}/
 ```
 
