@@ -745,7 +745,7 @@ copies or substantial portions of the Software.
 
 **Maintained by:** Abubakkar Khan
 
-- **Lead:** Abubakkar Khan (System Engineer, Cybersecurity Architect)
+- **Lead:** Abubakkar Khan (System Engineer, Cybersecurity Researcher)
 - **Team:** SCT DevOps & Infrastructure
 
 ---
